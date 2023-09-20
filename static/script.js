@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const getLocationButton = document.getElementById("getLocationButton");
-    const locationText = document.getElementById("locationText");
+    const locationText = document.getElementById("outputBox");
 
     getLocationButton.addEventListener("click", () => {
         if ("geolocation" in navigator) {
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const data = await response.json();
 
                 if (data.restaurantName) {
-                    locationText.textContent = `Random restaurant near your location: ${data.restaurantName}`;
+                    locationText.textContent = `${data.restaurantName}`;
                 } else {
                     locationText.textContent = "No restaurants found nearby.";
                 }
