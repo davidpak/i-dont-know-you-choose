@@ -4,13 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>I Don't Know, You Choose</title>
-     <link rel="stylesheet" type="text/css" href="../static/styles.css">
+    <link rel="stylesheet" type="text/css" href="../static/styles.css">
 </head>
 <body>
     <div class="container">
         <h1>I Don't Know, You Choose</h1>
+
+        <!-- Add the price range dropdown -->
+        <label for="priceRange">Price Range:</label>
+        <select id="priceRange">
+            <option value="1">$</option>
+            <option value="2">$$</option>
+            <option value="3">$$$</option>
+            <option value="4">$$$$</option>
+        </select>
+
         <button id="getLocationButton">Generate Restaurant</button>
-        <div id="outputBox"></div>
+        <div id="outputBox" class="scrollable-container"></div>
     </div>
 
     <script src="../static/script.js"></script>

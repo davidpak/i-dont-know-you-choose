@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const getLocationButton = document.getElementById("getLocationButton");
     const outputBox = document.getElementById("outputBox");
+    const priceRangeSelect = document.getElementById("priceRange");
 
     // Fetch the Google Places API key from the server
     fetch('/get-api-key')
@@ -8,13 +9,14 @@ document.addEventListener("DOMContentLoaded", () => {
         .then((data) => {
             const apiKey = data.apiKey;
 
-            getLocationButton.addEventListener("click", async () => {
+             getLocationButton.addEventListener("click", async () => {
                 if ("geolocation" in navigator) {
                     navigator.geolocation.getCurrentPosition(async (position) => {
                         const latitude = position.coords.latitude;
                         const longitude = position.coords.longitude;
+                        const selectedPriceRange = priceRangeSelect.value; // Get the selected price range
 
-                        const response = await fetch(`/find-restaurant?lat=${latitude}&lng=${longitude}&apiKey=${apiKey}`);
+                        const response = await fetch(`/find-restaurant?lat=${latitude}&lng=${longitude}&priceRange=${selectedPriceRange}`);
                         const data = await response.json();
 
                         if (data.error) {
@@ -27,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             outputBox.innerHTML = `
                                 <h2>${restaurant.name}</h2>
                                 <p>${restaurant.address}</p>
-                                <img src="${photoUrl}" alt="Restaurant Photo">
+                                <img src="${photoUrl}" alt="Restaurant Photo" class="restaurant-image">
                             `;
                         } else {
                             outputBox.textContent = "No restaurants found nearby.";

@@ -62,40 +62,76 @@ def get_restaurant_details(place_id):
     return None
 
 
+# Function to find a random restaurant within a price range
+def find_random_restaurant_with_price(lat, lng, price_range):
+    base_url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+    params = {
+        'location': f'{lat},{lng}',
+        'radius': 24140,  # 15 miles in meters
+        'type': 'restaurant',
+        'key': API_KEY,
+    }
+
+    response = requests.get(base_url, params=params)
+    data = response.json()
+    if 'results' in data:
+        restaurants = data['results']
+        filtered_restaurants = []
+
+        for restaurant in restaurants:
+            if 'price_level' in restaurant and restaurant['price_level'] == price_range:
+                filtered_restaurants.append(restaurant)
+
+        if filtered_restaurants:
+            random_restaurant = random.choice(filtered_restaurants)
+            return random_restaurant
+    return None
+
+
+# Function to find a random restaurant within a price range
+def find_random_restaurant_with_price(lat, lng, price_range):
+    base_url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+    params = {
+        'location': f'{lat},{lng}',
+        'radius': 24140,  # 15 miles in meters
+        'type': 'restaurant',
+        'key': API_KEY,
+    }
+
+    response = requests.get(base_url, params=params)
+    data = response.json()
+    if 'results' in data:
+        restaurants = data['results']
+        filtered_restaurants = []
+
+        for restaurant in restaurants:
+            if 'price_level' in restaurant and restaurant['price_level'] == price_range:
+                filtered_restaurants.append(restaurant)
+
+        if filtered_restaurants:
+            random_restaurant = random.choice(filtered_restaurants)
+            return random_restaurant
+    return None
+
+
 @app.route('/find-restaurant', methods=['GET'])
 def get_random_restaurant():
     try:
         lat = float(request.args.get('lat'))
         lng = float(request.args.get('lng'))
+        price_range = int(request.args.get('priceRange', '0'))  # Default to 0 if not provided
 
-        restaurant_name = find_random_restaurant(lat, lng)
+        restaurant = find_random_restaurant_with_price(lat, lng, price_range)
 
-        if restaurant_name:
-            base_url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
-            params = {
-                'location': f'{lat},{lng}',
-                'radius': 24140,  # 15 miles in meters
-                'type': 'restaurant',
-                'key': API_KEY,
-            }
-
-            response = requests.get(base_url, params=params)
-            data = response.json()
-            if 'results' in data:
-                restaurants = data['results']
-                for restaurant in restaurants:
-                    if restaurant['name'] == restaurant_name:
-                        place_id = restaurant['place_id']
-                        restaurant_details = get_restaurant_details(place_id)
-                        if restaurant_details:
-                            return jsonify({"restaurant": restaurant_details})
-                        else:
-                            return jsonify({"error": "Restaurant details not found."})
-                return jsonify({"error": "Restaurant not found in results."})
+        if restaurant:
+            place_id = restaurant['place_id']
+            restaurant_details = get_restaurant_details(place_id)
+            if restaurant_details:
+                return jsonify({"restaurant": restaurant_details})
             else:
-                return jsonify({"error": "No restaurants found nearby."})
+                return jsonify({"error": "Restaurant details not found."})
         else:
-            return jsonify({"error": "No restaurants found nearby."})
+            return jsonify({"error": "No restaurants found nearby in the selected price range."})
     except Exception as e:
         return jsonify({"error": str(e)})
 
