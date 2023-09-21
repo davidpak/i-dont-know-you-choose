@@ -63,17 +63,19 @@ def get_restaurant_details(place_id):
 
 
 # Function to find a random restaurant within a price range
-def find_random_restaurant_with_price(lat, lng, price_range):
+def find_random_restaurant_with_price(lat, lng, price_range, page_token=None):
     base_url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
     params = {
         'location': f'{lat},{lng}',
         'radius': 24140,  # 15 miles in meters
         'type': 'restaurant',
         'key': API_KEY,
+        'page_token': page_token  # Include the page token if provided
     }
 
     response = requests.get(base_url, params=params)
     data = response.json()
+
     if 'results' in data:
         restaurants = data['results']
         filtered_restaurants = []
@@ -84,8 +86,9 @@ def find_random_restaurant_with_price(lat, lng, price_range):
 
         if filtered_restaurants:
             random_restaurant = random.choice(filtered_restaurants)
-            return random_restaurant
-    return None
+            return random_restaurant, data.get('next_page_token')  # Return the next page token if available
+
+    return None, None
 
 
 @app.route('/find-restaurant', methods=['GET'])
@@ -95,7 +98,11 @@ def get_random_restaurant():
         lng = float(request.args.get('lng'))
         price_range = int(request.args.get('priceRange', '0'))  # Default to 0 if not provided
 
-        restaurant = find_random_restaurant_with_price(lat, lng, price_range)
+        restaurant = None
+        page_token = None
+
+        while not restaurant and page_token != "":
+            restaurant, page_token = find_random_restaurant_with_price(lat, lng, price_range, page_token)
 
         if restaurant:
             place_id = restaurant['place_id']
