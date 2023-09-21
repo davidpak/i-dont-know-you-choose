@@ -79,33 +79,7 @@ def find_random_restaurant_with_price(lat, lng, price_range):
         filtered_restaurants = []
 
         for restaurant in restaurants:
-            if 'price_level' in restaurant and restaurant['price_level'] == price_range:
-                filtered_restaurants.append(restaurant)
-
-        if filtered_restaurants:
-            random_restaurant = random.choice(filtered_restaurants)
-            return random_restaurant
-    return None
-
-
-# Function to find a random restaurant within a price range
-def find_random_restaurant_with_price(lat, lng, price_range):
-    base_url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
-    params = {
-        'location': f'{lat},{lng}',
-        'radius': 24140,  # 15 miles in meters
-        'type': 'restaurant',
-        'key': API_KEY,
-    }
-
-    response = requests.get(base_url, params=params)
-    data = response.json()
-    if 'results' in data:
-        restaurants = data['results']
-        filtered_restaurants = []
-
-        for restaurant in restaurants:
-            if 'price_level' in restaurant and restaurant['price_level'] == price_range:
+            if price_range == 0 or ('price_level' in restaurant and restaurant['price_level'] == price_range):
                 filtered_restaurants.append(restaurant)
 
         if filtered_restaurants:

@@ -16,7 +16,12 @@ document.addEventListener("DOMContentLoaded", () => {
                         const longitude = position.coords.longitude;
                         const selectedPriceRange = priceRangeSelect.value; // Get the selected price range
 
-                        const response = await fetch(`/find-restaurant?lat=${latitude}&lng=${longitude}&priceRange=${selectedPriceRange}`);
+                        let price_level = 0; // Default to 0 (all prices) if no price range is selected
+                        if (selectedPriceRange !== "") {
+                            price_level = parseInt(selectedPriceRange);
+                        }
+
+                        const response = await fetch(`/find-restaurant?lat=${latitude}&lng=${longitude}&priceRange=${price_level}`);
                         const data = await response.json();
 
                         if (data.error) {
