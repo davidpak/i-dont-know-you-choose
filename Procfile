@@ -1,1 +1,1 @@
-web: gunicorn i-dont-know-you-choose
+web: gunicorn i-dont-know-you-choose:app
